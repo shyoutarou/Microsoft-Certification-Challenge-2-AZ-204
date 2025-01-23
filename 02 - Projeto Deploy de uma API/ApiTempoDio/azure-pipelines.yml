@@ -1,0 +1,43 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'release'
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: 
+
+- task: UseDotNet@2
+  displayName: 'Instal Net SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+
+- script: dotnet restore $(solution)
+  displayName: 'Restore Solution'
+
+- script: dotnet build $(solution) --configuration $(buildConfiguration)
+  displayName: 'Build Solution'
+
+- script: dotnet test $(solution) --configuration $(buildConfiguration) --no-build --collect: 'XPlat Code Coverage"
+  displayName: 'Build Solution' 
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'acrapidemohsouza'
+    repository: 'api-dio-test'
+    command: 'buildAndPush'
+    Dockerfile: './APITempoDIO/Dockerfile'
